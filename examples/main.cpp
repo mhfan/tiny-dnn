@@ -38,6 +38,21 @@ int main(int argc, char** argv) {
   }
 }
 
+std::vector<label_t> train_labels, test_labels;
+std::vector<vec_t> train_images, test_images;
+
+void load_mnist_dataset(const std::string& data_dir) {
+  const std::string train_labels_path = data_dir + "/train-labels.idx1-ubyte";
+  const std::string train_images_path = data_dir + "/train-images.idx3-ubyte";
+  const std::string test_labels_path  = data_dir + "/t10k-labels.idx1-ubyte";
+  const std::string test_images_path  = data_dir + "/t10k-images.idx3-ubyte";
+
+  parse_mnist_labels(train_labels_path, &train_labels);
+  parse_mnist_images(train_images_path, &train_images, -1.0, 1.0, 0, 0);
+  parse_mnist_labels(test_labels_path, &test_labels);
+  parse_mnist_images(test_images_path, &test_images, -1.0, 1.0, 0, 0);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // learning convolutional neural networks (LeNet-5 like architecture)
 void sample1_convnet(const string& data_dir) {
@@ -76,19 +91,7 @@ void sample1_convnet(const string& data_dir) {
 
   std::cout << "load models..." << std::endl;
 
-  // load MNIST dataset
-  std::vector<label_t> train_labels, test_labels;
-  std::vector<vec_t> train_images, test_images;
-
-  std::string train_labels_path = data_dir + "/train-labels.idx1-ubyte";
-  std::string train_images_path = data_dir + "/train-images.idx3-ubyte";
-  std::string test_labels_path  = data_dir + "/t10k-labels.idx1-ubyte";
-  std::string test_images_path  = data_dir + "/t10k-images.idx3-ubyte";
-
-  parse_mnist_labels(train_labels_path, &train_labels);
-  parse_mnist_images(train_images_path, &train_images, -1.0, 1.0, 2, 2);
-  parse_mnist_labels(test_labels_path, &test_labels);
-  parse_mnist_images(test_images_path, &test_images, -1.0, 1.0, 2, 2);
+  load_mnist_dataset(data_dir);
 
   std::cout << "start learning" << std::endl;
 
@@ -140,19 +143,7 @@ void sample2_mlp(const string& data_dir) {
 #endif
   gradient_descent optimizer;
 
-  // load MNIST dataset
-  std::vector<label_t> train_labels, test_labels;
-  std::vector<vec_t> train_images, test_images;
-
-  std::string train_labels_path = data_dir + "/train-labels.idx1-ubyte";
-  std::string train_images_path = data_dir + "/train-images.idx3-ubyte";
-  std::string test_labels_path  = data_dir + "/t10k-labels.idx1-ubyte";
-  std::string test_images_path  = data_dir + "/t10k-images.idx3-ubyte";
-
-  parse_mnist_labels(train_labels_path, &train_labels);
-  parse_mnist_images(train_images_path, &train_images, -1.0, 1.0, 0, 0);
-  parse_mnist_labels(test_labels_path, &test_labels);
-  parse_mnist_images(test_images_path, &test_images, -1.0, 1.0, 0, 0);
+  load_mnist_dataset(data_dir);
 
   optimizer.alpha = 0.001;
 
@@ -229,19 +220,7 @@ void sample4_dropout(const string& data_dir) {
   optimizer.alpha  = 0.003;  // TODO(nyanp): not optimized
   optimizer.lambda = 0.0;
 
-  // load MNIST dataset
-  std::vector<label_t> train_labels, test_labels;
-  std::vector<vec_t> train_images, test_images;
-
-  std::string train_labels_path = data_dir + "/train-labels.idx1-ubyte";
-  std::string train_images_path = data_dir + "/train-images.idx3-ubyte";
-  std::string test_labels_path  = data_dir + "/t10k-labels.idx1-ubyte";
-  std::string test_images_path  = data_dir + "/t10k-images.idx3-ubyte";
-
-  parse_mnist_labels(train_labels_path, &train_labels);
-  parse_mnist_images(train_images_path, &train_images, -1.0, 1.0, 0, 0);
-  parse_mnist_labels(test_labels_path, &test_labels);
-  parse_mnist_images(test_images_path, &test_images, -1.0, 1.0, 0, 0);
+  load_mnist_dataset(data_dir);
 
   // load train-data, label_data
   progress_display disp(train_images.size());
@@ -287,19 +266,7 @@ void sample5_unbalanced_training_data(const string& data_dir) {
   auto nn_balanced = make_mlp<tanh_layer>({28 * 28, num_hidden_units, 10});
   gradient_descent optimizer;
 
-  // load MNIST dataset
-  std::vector<label_t> train_labels, test_labels;
-  std::vector<vec_t> train_images, test_images;
-
-  std::string train_labels_path = data_dir + "/train-labels.idx1-ubyte";
-  std::string train_images_path = data_dir + "/train-images.idx3-ubyte";
-  std::string test_labels_path  = data_dir + "/t10k-labels.idx1-ubyte";
-  std::string test_images_path  = data_dir + "/t10k-images.idx3-ubyte";
-
-  parse_mnist_labels(train_labels_path, &train_labels);
-  parse_mnist_images(train_images_path, &train_images, -1.0, 1.0, 0, 0);
-  parse_mnist_labels(test_labels_path, &test_labels);
-  parse_mnist_images(test_images_path, &test_images, -1.0, 1.0, 0, 0);
+  load_mnist_dataset(data_dir);
 
   {  // create an unbalanced training set
     std::vector<label_t> train_labels_unbalanced;
